@@ -1,8 +1,15 @@
+import { createClient } from
+  "https://esm.sh/@supabase/supabase-js@2";
+
+const supabase = createClient(
+  "https://kjwgodmsdclkljukryft.supabase.co",
+  "sb_publishable_B8bshQswHtxR8oSlpqXPbg_g9-GXNQz"
+);
 const app = document.querySelector("#app");
 
 app.innerHTML = `
   <h1>HackMe</h1>
-  <p>Demo sign up page for sms prevention opt-ins.</p>
+  <p>Demo sign up page for opting-in to sms scam simulations.</p>
 
   <form id="signup-form">
     <p>
@@ -13,10 +20,31 @@ app.innerHTML = `
     </p>
 
     <p>
+        <label>
+            Email<br />
+            <input id="email" type="email" />
+        </label>
+    </p>
+
+    <p>
       <label>
         Phone number<br />
         <input id="phone" type="tel" required />
       </label>
+    </p>
+
+    <p>
+        <label>
+            Comments<br />
+            <textarea id="comments" rows="4"></textarea>
+        </label>
+    </p>
+
+    <p>
+        <label>
+            Favorite Item<br />
+            <input id="favorite-item" type="text" />
+        </label>
     </p>
 
     <p>
@@ -35,9 +63,9 @@ app.innerHTML = `
 const form = document.querySelector("#signup-form");
 const message = document.querySelector("#message");
 
-// listen for valid signup to later send to db
+// Listen for valid signup for database row entry
 
-form.addEventListener("submit", (event) => {
+form.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   if (!form.checkValidity()) {
@@ -45,6 +73,40 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  // placeholder confirmation task
-  message.textContent = "Signup successful";
+// User input consts for database entry
+
+  const name = document.querySelector("#name").value.trim();
+  const phoneNum = document.querySelector("#phone").value.replace(/\D/g, "");
+  const email = document.querySelector("#email").value.trim();
+  const favorite_item = document.querySelector("#favorite-item").value.trim();
+  const comments = document.querySelector("#comments").value.trim();
+
+  if (!(phoneNum.length == 10)) {
+    message.textContent = "Please enter a valid phone number.";
+    return;
+  }
+
+// Push entered data to Supabase
+
+  const { error } = await supabase
+    .from("signup_requests")
+    .insert({
+      name: name,
+      phone: `+1${phoneNum}`,
+      consent: true,
+      email: email,
+      favorite_item: favorite_item,
+      comments: comments
+    });
+
+  if (error) {
+    console.error(error);
+    message.textContent = "Signup failed. Please try again.";
+    return;
+  }
+
+  message.textContent =
+    "Request submitted. Pending approval.";
+
+  form.reset();
 });
