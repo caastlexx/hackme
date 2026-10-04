@@ -65,17 +65,19 @@ async function getConversations() {
 
     console.log("Conversation query result:", { data, error });
 
-    return data.map((converation) => ({
-        id: converation.id,
-        title: conversation.campaign,
-        date: converation.started_at,
-        channel: conversation.kind,
+    return data.map((conversation) => ({
+        id: conversation.id,
+        title: conversation.campaign || "Training conversation",
+        date: conversation.started_at
+            ? new Date(conversation.started_at).toLocaleString()
+            : "Date unavailable",
+        channel: (conversation.kind || "Call").toUpperCase(),
         report: {
-            summary: converation.summary,
+            summary: conversation.summary || "No summary available yet.",
             recommendation:
-                converation.followups
+            conversation.followups || "No recommendation available yet."
         }
-    }))
+    }));
 }
 
 function showConversations(conversations) {
@@ -122,13 +124,17 @@ function showReport(conversation) {
 
 const conversations = await getConversations();
 
-if (conversations.length == 0) {
-    conversationData.innerHTML = `
+if (conversations.length === 0) {
+  conversationData.innerHTML = `
     <div class="empty-report">
-        <h2>No conversations available for review</h2>
-        <p>Complete a simulation to generate a report</p>
+      <h2>No conversations available for review</h2>
+      <p>Complete a simulation to generate a report.</p>
     </div>
-    `;
+  `;
+} else if (selectedConversation) {
+  showReport(selectedConversation);
+} else {
+  showConversations(conversations);
 }
 
 const selectedConversation = conversations.find(

@@ -149,6 +149,10 @@ const emailInput = document.querySelector("#email");
 const sendSignInLinkButton = document.querySelector("#send-sign-in-link");
 
 sendSignInLinkButton.addEventListener("click", async () => {
+  if (DEMO) {
+    sendSignInLinkButton.hidden = true;
+  }
+
   if (!emailInput.checkValidity()) {
     emailInput.reportValidity();
     return;
@@ -199,7 +203,7 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  if (DEMO_MODE) {
+  if (DEMO) {
     message.textContent =
       "Demo request submitted. In the live version, you would sign in by email before joining a training session.";
     form.reset();
