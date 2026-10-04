@@ -53,16 +53,60 @@ function escapeHtml(value) {
     .replaceAll("'", "&#039;");
 }
 
+function parseJson(value) {
+  if (typeof value !== "string") {
+    return value;
+  }
+
+  try {
+    return JSON.parse(value);
+  } catch {
+    return value;
+  }
+}
+
+function formatFollowups(followups) {
+  const parsed = parseJson(followups);
+
+  if (!parsed) {
+    return "No recommendation is available yet.";
+  }
+
+  if (typeof parsed === "string") {
+    return parsed;
+  }
+
+  if (Array.isArray(parsed)) {
+    return parsed.join(" ");
+  }
+
+  if (Array.isArray(parsed.recommendations)) {
+    return parsed.recommendations.join(" ");
+  }
+
+  return "No recommendation is available yet.";
+}
+
 function formatTranscript(transcript) {
-  if (!transcript) {
+  const parsed = parseJson(transcript);
+
+  if (!parsed) {
     return "A transcript is not available for this training conversation yet.";
   }
 
-  if (typeof transcript === "string") {
-    return transcript;
+  if (typeof parsed === "string") {
+    return parsed;
   }
 
-  return JSON.stringify(transcript, null, 2);
+  if (Array.isArray(parsed)) {
+    return parsed.join("\n\n");
+  }
+
+  if (Array.isArray(parsed.transcript)) {
+    return parsed.transcript.join("\n\n");
+  }
+
+  return JSON.stringify(parsed, null, 2);
 }
 
 async function getConversations() {
@@ -126,8 +170,7 @@ async function getConversations() {
       transcript: conversation.transcript,
       report: {
         summary: conversation.summary || "No summary available yet.",
-        recommendation:
-          conversation.followups || "No recommendation available yet."
+        recommendation: formatFollowups(conversation.followups)
       }
     }))
   };
@@ -183,7 +226,7 @@ function showReport(conversation) {
 function showSignedOut() {
   conversationData.innerHTML = `
     <div class="empty-report">
-      <div class="empty-report-icon" aria-hidden="true">â—‹</div>
+      <div class="empty-report-icon" aria-hidden="true">○</div>
       <h2>Sign in to view your conversations</h2>
       <p>Use the sign-in link on the sign-up page, then return here to review your training feedback.</p>
       <div class="hero-actions">
