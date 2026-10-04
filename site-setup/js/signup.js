@@ -109,4 +109,10 @@ form.addEventListener("submit", async (event) => {
     "Request submitted. Pending approval.";
 
   form.reset();
+
+  /*
+  Add event (Fetch report)
+    get report
+    insert report to page
+  */
 });
