@@ -124,6 +124,10 @@ function showReport(conversation) {
 
 const conversations = await getConversations();
 
+const selectedConversation = conversations.find(
+  (conversation) => conversation.id === selection
+);
+
 if (conversations.length === 0) {
   conversationData.innerHTML = `
     <div class="empty-report">
@@ -132,16 +136,6 @@ if (conversations.length === 0) {
     </div>
   `;
 } else if (selectedConversation) {
-  showReport(selectedConversation);
-} else {
-  showConversations(conversations);
-}
-
-const selectedConversation = conversations.find(
-  (conversation) => conversation.id === selection
-);
-
-if (selectedConversation) {
   showReport(selectedConversation);
 } else {
   showConversations(conversations);
