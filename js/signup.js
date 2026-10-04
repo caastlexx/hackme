@@ -8,7 +8,7 @@ const supabase = createClient(
 );
 const app = document.querySelector("#app");
 
-const DEMO = true;
+const DEMO = false;
 
 app.innerHTML = `
   <header class="site-header">
@@ -150,7 +150,8 @@ const sendSignInLinkButton = document.querySelector("#send-sign-in-link");
 
 sendSignInLinkButton.addEventListener("click", async () => {
   if (DEMO) {
-    sendSignInLinkButton.hidden = true;
+    message.textContent = "Demo mode does not require an email sign-in link.";
+    return;
   }
 
   if (!emailInput.checkValidity()) {
