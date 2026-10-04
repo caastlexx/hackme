@@ -20,7 +20,7 @@ app.innerHTML = `
       <nav class="site-nav" aria-label="Main navigation">
         <a href="#how-it-works">How it works</a>
         <a href="#safety">Your privacy</a>
-        <a href="./report.html">Training Feedback</a>
+        <a href="./conversations.html">My Conversations</a>
       </nav>
     </div>
   </header>
@@ -34,7 +34,7 @@ app.innerHTML = `
           <p class="hero-lede">HackMe is a controlled training experience that helps you recognize suspicious messages in a calm, safe setting.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#enrollment">Start your training mission</a>
-            <a class="button button-secondary" href="./report.html">View feedback example</a>
+            <a class="button button-secondary" href="./conversations.html">View feedback example</a>
           </div>
           <p class="trust-note"><strong>Important:</strong> We will never ask for your password, bank details, account number, payment, or a verification code.</p>
         </div>
@@ -115,7 +115,12 @@ app.innerHTML = `
               <legend>Training consent</legend>
               <label class="checkbox-row" for="consent">
                 <input id="consent" type="checkbox" required />
-                <span><small>I opt in to receive educational SMS scam simulations.</small></span>
+                <span>
+                  <strong>I agree to participate in this controlled educational scam-awareness simulation.</strong>
+                  <small>
+                    I understand that HackMe may send a simulated training message to the contact information I provide and may generate educational feedback based on my interaction with that simulation. This is not a real message from a bank, government agency, delivery company, or other organization. I will never be asked to send money, share a password, verification code, bank account number, payment-card information, or other sensitive financial information. My submitted contact information and optional responses will be used only to operate this demonstration and provide my simulation feedback—not for real transactions, marketing, sales, or use outside this educational simulation. By checking this box, I confirm that I am voluntarily opting in and understand that the experience is entirely simulated.
+                  </small>
+                </span>
               </label>
             </fieldset>
             <button class="button button-primary button-full" type="submit">Request training access</button>
@@ -155,11 +160,23 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  // Authentication for user so conversations.js can access columns in call_conversations
+
+  const {
+    data: { user }
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    message.textContent = "Sign in is required to start a session.";
+    return;
+  }
+
 // Push entered data to Supabase
 
   const { error } = await supabase
     .from("signup_requests")
     .insert({
+      auth_user_id: user.id,
       name: name,
       phone: `+1${phoneNum}`,
       consent: true,
@@ -178,10 +195,4 @@ form.addEventListener("submit", async (event) => {
     "Request submitted. Pending approval.";
 
   form.reset();
-
-  /*
-  Add event (Fetch report)
-    get report
-    insert report to page
-  */
 });
