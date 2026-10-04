@@ -8,9 +8,9 @@ const supabase = createClient(
 );
 const app = document.querySelector("#app");
 
-app.innerHTML = `
-  <a class="skip-link" href="#enrollment">Skip to sign up form</a>
+const DEMO = true;
 
+app.innerHTML = `
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="./index.html" aria-label="HackMe home">
@@ -196,6 +196,13 @@ form.addEventListener("submit", async (event) => {
 
   if (!(phoneNum.length == 10)) {
     message.textContent = "Please enter a valid phone number.";
+    return;
+  }
+
+  if (DEMO_MODE) {
+    message.textContent =
+      "Demo request submitted. In the live version, you would sign in by email before joining a training session.";
+    form.reset();
     return;
   }
 
