@@ -95,13 +95,21 @@ app.innerHTML = `
               <label for="name">Name</label>
               <input id="name" type="text" autocomplete="name" required />
             </div>
+
             <div class="field-group">
               <label for="email">Email</label>
-              <input id="email" type="email" autocomplete="email" />
+              <input id="email" type="email" autocomplete="email" required />
+              <button
+                class="button button-secondary"
+                type="button"
+                id="send-sign-in-link"
+              >
+                Send sign-in link
+              </button>
             </div>
             <div class="field-group">
               <label for="phone">Phone number</label>
-              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" aria-describedby="phone-help" required />
+              <input id="phone" type="tel" inputmode="tel" autocomplete="tel" required />
             </div>
             <div class="field-group">
               <label for="comments">Comments</label>
@@ -137,6 +145,37 @@ app.innerHTML = `
 const form = document.querySelector("#signup-form");
 const message = document.querySelector("#message");
 
+const emailInput = document.querySelector("#email");
+const sendSignInLinkButton = document.querySelector("#send-sign-in-link");
+
+sendSignInLinkButton.addEventListener("click", async () => {
+  if (!emailInput.checkValidity()) {
+    emailInput.reportValidity();
+    return;
+  }
+
+  sendSignInLinkButton.disabled = true;
+  message.textContent = "Sending your sign-in link...";
+
+  const { error } = await supabase.auth.signInWithOtp({
+    email: emailInput.value.trim(),
+    options: {
+      emailRedirectTo: window.location.origin + window.location.pathname
+    }
+  });
+
+  sendSignInLinkButton.disabled = false;
+
+  if (error) {
+    console.error(error);
+    message.textContent = "We could not send the sign-in link. Please try again.";
+    return;
+  }
+
+  message.textContent =
+    "Sign-in link sent. Open it from your email, then return here to submit your training request.";
+});
+
 // Listen for valid signup for database row entry
 
 form.addEventListener("submit", async (event) => {
@@ -160,14 +199,22 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
-  // Authentication for user so conversations.js can access columns in call_conversations
+  // Authentication for user email so conversations.js can access columns in call_conversations
 
   const {
-    data: { user }
+    data: { user },
+    error: authError
   } = await supabase.auth.getUser();
 
+  if (authError) {
+    console.error(authError);
+    message.textContent = "We could not verify your sign-in. Please try again.";
+    return;
+  }
+
   if (!user) {
-    message.textContent = "Sign in is required to start a session.";
+    message.textContent =
+      "Please use the “Send sign-in link” button and open the email before submitting your training request.";
     return;
   }
 
