@@ -4,10 +4,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>HackMe | My Conversations
-    </title>
+    <title>HackMe | My Conversations</title>
     <link rel="stylesheet" href="./css/styles.css" />
   </head>
+  <script type="module" src="./js/conversations.js"></script>
   <body>
     <header class="site-header">
       <div class="header-inner">
@@ -36,11 +36,13 @@
 
       <section class="section report-summary-section">
         <div class="container content-narrow">
-          <div class="empty-report">
-            <div class="empty-report-icon" aria-hidden="true">○</div>
-            <h2>No conversations available for review</h2>
-            <p>Complete a simulation to generate a report</p>
-            <div class="hero-actions"><a class="button button-primary" href="./index.html">Go to sign up</a></div>
+          <div id="conversation"></div>
+            <div id="valid-info" style="display: none">
+              <div class="empty-report-icon" aria-hidden="true">○</div>
+              <h2>No conversations available for review</h2>
+              <p>Complete a simulation to generate a report</p>
+              <div class="hero-actions"><a class="button button-primary" href="./index.html">Go to sign up</a></div>
+            </div>
           </div>
         </div>
       </section>
