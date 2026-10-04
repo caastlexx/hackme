@@ -6,7 +6,7 @@ const supabase = createClient(
   "sb_publishable_B8bshQswHtxR8oSlpqXPbg_g9-GXNQz"
 );
 
-const DEMO = false;
+const DEMO = true;
 const TEST_SIGNUP_REQUEST_ID = "813c253a-0a38-424f-9a94-5db03fb5697b";
 
 const demoConversations = [
